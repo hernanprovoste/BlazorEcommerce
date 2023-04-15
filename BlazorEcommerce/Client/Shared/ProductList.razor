@@ -1,51 +1,33 @@
-﻿<ul class="list-unstyled">
-    @foreach (var product in Products)
+﻿@inject HttpClient Http
+
+@foreach (var product in Products)
     {
-        <li class="media my-3">
-            <div class="media-img-wrapper mr-2">
-                <a href="#">
-                    <img class="media-img" src="@product.ImageUrl" alt="@product.Title" />
-                </a>
-            </div>
-            <div class="media-body">
-                <a href="#">
-                    <h4 class="mb-0">@product.Title</h4>
-                </a>
-                <p>@product.Description</p>
-                <h5 class="price">
-                    $@product.Price
-                </h5>
-            </div>
-        </li>
+        <MudStack Spacing="4">
+            <MudPaper Class="pa-4">
+                <MudStack Row="true">
+                    <MudImage Src="@product.ImageUrl" Width="200" Height="300" Alt="@product.Title" Elevation="25" />
+                    <MudStack Justify="Justify.Center" Spacing="0">
+                        <MudLink Href="#" Typo="Typo.h4">
+                            @product.Title
+                        </MudLink>
+                        <MudText Typo="Typo.body2">@product.Description</MudText>
+                        <MudText Typo="Typo.h6">
+                            $@product.Price
+                        </MudText>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudStack>
+        
     }
-</ul>
 
 @code {
-    private static List<Product> Products = new List<Product>
+    private static List<Product> Products = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
     {
-        new Product
-        {
-            Id = 1,
-            Title = "Clean Code: A Handbook of Agile Software Craftsmanship",
-            Description = "ven bad code can function. But if code isn't clean, it can bring a development organization to its knees. Every year, countless hours and significant resources are lost because of poorly written code. But it doesn't have to be that way.",
-            ImageUrl = "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1436202607i/3735293.jpg",
-            Price = 9.99m
-        },
-        new Product
-        {
-            Id = 2,
-            Title = "Animals in Translation: Using the Mysteries of Autism to Decode Animal Behavior",
-            Description = "Why would a cow lick a tractor? Why are collies getting dumber? Why do dolphins sometimes kill for fun? How can a parrot learn to spell? How did wolves teach man to evolve?",
-            ImageUrl = "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1442375726i/7366.jpg",
-            Price = 12.99m
-        },
-        new Product
-        {
-            Id = 3,
-            Title = "Memoirs of a Geisha",
-            Description = "A literary sensation and runaway bestseller, this brilliant novel presents with seamless authenticity and exquisite lyricism the true confessions of one of Japan's most celebrated geisha.",
-            ImageUrl = "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1409595968i/929.jpg",
-            Price = 7.99m
-        }
-    };
+        var result = await Http.GetFromJsonAsync<List<Product>>("api/product");
+        if (result is not null)
+            Products = result;
+    }
 }
