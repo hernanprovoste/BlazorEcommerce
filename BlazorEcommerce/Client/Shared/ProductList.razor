@@ -1,6 +1,12 @@
-﻿@inject HttpClient Http
+﻿@inject IProductService ProductService
 
-@foreach (var product in Products)
+@if (ProductService.Products is null || ProductService.Products.Count == 0)
+{
+    <span>Loading Products...</span>
+}
+else
+{
+    @foreach (var product in ProductService.Products)
     {
         <MudStack Spacing="4">
             <MudPaper Class="pa-4">
@@ -20,14 +26,12 @@
         </MudStack>
         
     }
+}
+
 
 @code {
-    private static List<Product> Products = new List<Product>();
-
     protected override async Task OnInitializedAsync()
     {
-        var result = await Http.GetFromJsonAsync<List<Product>>("api/product");
-        if (result is not null)
-            Products = result;
+        await ProductService.GetProducts();
     }
 }
